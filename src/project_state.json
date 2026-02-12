@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Build a PhonePe-like payments app that supports QR code scanning and sends SMS notifications to the QR owner’s registered number and to the payer/payee for credit/debit transactions.",
+  "architectural_notes": [
+    "Will require QR scanning module and a backend mapping QR identifiers to registered phone numbers/accounts.",
+    "Will require SMS delivery integration (e.g., SMS gateway) for scan and transaction credit/debit notifications."
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- Minimal fintech-style logo mark, geometric (app-logo.dim_512x512.png)\n- QR code + smartphone flat illustration with warm palette (qr-header-illustration.dim_1200x600.png)\n- Friendly empty inbox/transactions illustration, simple shapes (empty-state-illustration.dim_900x600.png)",
+  "existing_features": [
+    {
+      "id": "feature-implement-internet-identity-sign-in-and-a-minimal-user-profile-setup-screen-that-collects-and-stores-a-user-s-display-name-and-phone-number-as-plain-text-for-the-signed-in-principal",
+      "title": "Implement Internet Identity sign-in and a minimal user profile setup screen that collects and stores a user's display name and phone number (as plain text) for the signed-in principal.",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-qr-code-support-by-generating-a-personal-qr-code-for-each-signed-in-user-that-encodes-a-stable-identifier-resolvable-by-the-app-e-g-the-user-s-principal-text-or-an-app-specific-payment-handle-and-store-an-index-so-a-scanned-qr-can-be-mapped-to-the-qr-owner-s-registered-phone-number",
+      "title": "Add QR code support by generating a personal QR code for each signed-in user that encodes a stable identifier resolvable by the app (e.g., the user's principal text or an app-specific payment handle) and store an index so a scanned QR can be mapped to the QR owner's registered phone number.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-web-based-qr-scanner-screen-using-the-device-camera-when-available-to-scan-qr-codes-and-upon-a-valid-scan-display-the-resolved-recipient-details-and-a-payment-initiation-form-amount-optional-note",
+      "title": "Implement a web-based QR scanner screen using the device camera (when available) to scan QR codes and, upon a valid scan, display the resolved recipient details and a payment initiation form (amount + optional note).",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-transaction-flow-when-the-payer-confirms-payment-to-the-scanned-recipient-record-a-transaction-in-the-backend-payer-principal-recipient-principal-amount-note-timestamp-and-show-a-success-receipt-screen",
+      "title": "Create a transaction flow: when the payer confirms payment to the scanned recipient, record a transaction in the backend (payer principal, recipient principal, amount, note, timestamp) and show a success receipt screen.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-in-app-notifications-that-mirror-the-requested-sms-messages-1-when-a-qr-code-is-scanned-resolved-create-a-notification-addressed-to-the-qr-owner-indicating-their-qr-was-scanned-2-when-a-transaction-is-created-create-two-notifications-a-debit-notification-for-the-payer-and-a-credit-notification-for-the-recipient-display-these-in-a-notifications-inbox-ui",
+      "title": "Implement in-app notifications that mirror the requested SMS messages: (1) when a QR code is scanned/resolved, create a notification addressed to the QR owner indicating their QR was scanned; (2) when a transaction is created, create two notifications: a debit notification for the payer and a credit notification for the recipient. Display these in a notifications inbox UI.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-simple-home-dashboard-with-navigation-to-my-qr-scan-pay-transactions-notifications-and-profile-ensure-the-app-uses-a-coherent-distinct-visual-theme-avoid-blue-purple-applied-consistently-across-pages-typography-spacing-buttons-cards-and-empty-states",
+      "title": "Add a simple home dashboard with navigation to: My QR, Scan & Pay, Transactions, Notifications, and Profile; ensure the app uses a coherent, distinct visual theme (avoid blue/purple) applied consistently across pages (typography, spacing, buttons, cards, and empty states).",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-generated-static-brand-and-ui-illustration-assets-and-render-them-in-the-ui-stored-under-frontend-public-assets-generated-for-app-logo-a-qr-themed-header-illustration-and-an-empty-state-illustration-used-on-transactions-notifications-when-lists-are-empty",
+      "title": "Add generated static brand and UI illustration assets and render them in the UI (stored under frontend/public/assets/generated) for: app logo, a QR-themed header illustration, and an empty-state illustration used on Transactions/Notifications when lists are empty.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "QR code scanning for initiating payments/transfers",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Associate each QR code with a registered phone number/account",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Send SMS notification to the QR owner’s registered number when their QR is scanned/used",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Send credit/debit SMS notifications for transactions",
+      "reqIds": [],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "PhonePe-like QR payment flow with registered phone mapping and transaction notifications (in-app)",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

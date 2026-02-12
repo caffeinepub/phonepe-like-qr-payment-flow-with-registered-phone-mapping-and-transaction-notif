@@ -1,0 +1,165 @@
+{
+  "kind": "build_request",
+  "title": "PhonePe-like QR payment flow with registered phone mapping and transaction notifications (in-app)",
+  "priority": "normal",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "text": "Implement Internet Identity sign-in and a minimal user profile setup screen that collects and stores a user's display name and phone number (as plain text) for the signed-in principal.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "I want to make an app like PhonePe ... message is sent to the registered number"
+        ]
+      },
+      "acceptanceCriteria": [
+        "User can sign in with Internet Identity.",
+        "If the user has no profile yet, the app prompts for display name and phone number and saves it.",
+        "Profile data is persisted in the Motoko canister keyed by principal.",
+        "User can view their saved profile details after setup."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Add QR code support by generating a personal QR code for each signed-in user that encodes a stable identifier resolvable by the app (e.g., the user's principal text or an app-specific payment handle) and store an index so a scanned QR can be mapped to the QR owner's registered phone number.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "when a QR code is scanned, a message is sent to the registered number of the code"
+        ]
+      },
+      "acceptanceCriteria": [
+        "A signed-in user can navigate to a “My QR” screen and see their QR code.",
+        "The encoded QR payload is accepted by the app and maps to exactly one registered user in the backend.",
+        "Backend exposes a query method to resolve QR payload -> recipient user metadata needed for payment initiation (at minimum: recipient principal, display name, phone number)."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Implement a web-based QR scanner screen using the device camera (when available) to scan QR codes and, upon a valid scan, display the resolved recipient details and a payment initiation form (amount + optional note).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "when a QR code is scanned"
+        ]
+      },
+      "acceptanceCriteria": [
+        "User can open a “Scan & Pay” screen and grant camera permission to scan a QR code.",
+        "On successful scan, the UI shows recipient name/handle and a payment form with amount input.",
+        "If the QR payload is invalid or unregistered, the UI shows a clear error state and allows rescanning.",
+        "The scan flow works without requiring any external services."
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "text": "Create a transaction flow: when the payer confirms payment to the scanned recipient, record a transaction in the backend (payer principal, recipient principal, amount, note, timestamp) and show a success receipt screen.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "a message of credit debit is also sent"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Submitting the payment form creates a transaction record persisted in the canister.",
+        "The payer sees a success screen showing recipient, amount, timestamp, and a transaction ID.",
+        "Both payer and recipient can view the transaction in their history after creation.",
+        "Backend provides methods to list transactions for the signed-in user (as payer or recipient)."
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "text": "Implement in-app notifications that mirror the requested SMS messages: (1) when a QR code is scanned/resolved, create a notification addressed to the QR owner indicating their QR was scanned; (2) when a transaction is created, create two notifications: a debit notification for the payer and a credit notification for the recipient. Display these in a notifications inbox UI.",
+      "target": "both",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ],
+        "quotes": [
+          "a message is sent to the registered number of the code and a message of credit debit is also sent."
+        ]
+      },
+      "acceptanceCriteria": [
+        "When a scan resolves a registered recipient, the backend records a notification for the recipient indicating a scan event (who scanned if available, and time).",
+        "When a transaction is created, backend records a debit notification for payer and a credit notification for recipient including amount, counterparty, and time.",
+        "Frontend includes a “Notifications” screen listing notifications newest-first with read/unread state.",
+        "User can mark notifications as read (persisted)."
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "text": "Add a simple home dashboard with navigation to: My QR, Scan & Pay, Transactions, Notifications, and Profile; ensure the app uses a coherent, distinct visual theme (avoid blue/purple) applied consistently across pages (typography, spacing, buttons, cards, and empty states).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Home/dashboard provides clear entry points to all major screens.",
+        "Theme is consistent across the app and does not use a blue/purple primary palette.",
+        "Empty states (no transactions/notifications) are styled and informative in English.",
+        "UI is responsive for mobile-sized viewports."
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "text": "Add generated static brand and UI illustration assets and render them in the UI (stored under frontend/public/assets/generated) for: app logo, a QR-themed header illustration, and an empty-state illustration used on Transactions/Notifications when lists are empty.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-2"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Generated images exist under frontend/public/assets/generated with the specified filenames.",
+        "The app displays the logo in the header/login area.",
+        "The QR-themed illustration is used on the My QR and/or Scan & Pay screens.",
+        "The empty-state illustration is used on Transactions and Notifications when appropriate."
+      ]
+    }
+  ],
+  "constraints": [
+    "Backend must remain a single Motoko actor in backend/main.mo; only add backend/migration.mo if state schema upgrades require it.",
+    "Do not edit files under frontend/src/components/ui or other immutablePaths; compose existing UI components instead.",
+    "No third-party SMS/messaging integrations are allowed (e.g., Twilio/WhatsApp); implement notifications as in-app messages stored in the canister.",
+    "All user-facing text must be in English."
+  ],
+  "nonGoals": [
+    "Implementing real money movement, bank integrations, UPI rails, or settlement.",
+    "Integrating actual SMS delivery to phone numbers.",
+    "Third-party authentication providers other than Internet Identity.",
+    "Real-time push delivery of notifications (polling/refetch is acceptable)."
+  ],
+  "imageRequirements": {
+    "required": [
+      "Minimal fintech-style logo mark, geometric (app-logo.dim_512x512.png)",
+      "QR code + smartphone flat illustration with warm palette (qr-header-illustration.dim_1200x600.png)",
+      "Friendly empty inbox/transactions illustration, simple shapes (empty-state-illustration.dim_900x600.png)"
+    ],
+    "edits": []
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [
+      "Use English for any user-facing text in the build request."
+    ],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
+  }
+}

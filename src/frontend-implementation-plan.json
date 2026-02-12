@@ -1,0 +1,260 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "PhonePe-like QR scan & pay (frontend): II auth, QR screens, transactions, and in-app notifications",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Add Internet Identity sign-in UI and profile setup/view flow (display name + phone number) for the signed-in principal.",
+      "acceptanceCriteria": [
+        "User can sign in with Internet Identity.",
+        "If the user has no profile yet, the app prompts for display name and phone number and saves it.",
+        "Profile data is persisted in the Motoko canister keyed by principal.",
+        "User can view their saved profile details after setup."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "create",
+          "description": "Create the app shell that wires authentication state (Internet Identity) into routing and conditionally shows profile setup when needed. Use the selected authorization component guidance for login/logout + clearing cached data; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/router.tsx",
+          "operation": "create",
+          "description": "Add route structure including Profile screen and an authenticated-area guard that blocks app data for guests until sign-in is complete. Use the selected authorization component guidance for access-denied/unauthorized handling; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/AuthGate.tsx",
+          "operation": "create",
+          "description": "Implement an AuthGate wrapper that requires Internet Identity before rendering protected screens, and provides an English login prompt + logout control. Use the selected authorization component guidance; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/ProfilePage.tsx",
+          "operation": "create",
+          "description": "Create a Profile page that (1) fetches getCallerUserProfile, (2) shows a minimal setup form (display name, phone number) when missing, and (3) shows saved profile details after setup. Use the selected authorization component guidance for preventing profile setup flash and handling traps; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useProfile.ts",
+          "operation": "create",
+          "description": "Add React Query hooks for getCallerUserProfile and saveCallerUserProfile (plus local state helpers) and ensure logout clears profile-related cached queries. Use the selected authorization component guidance; verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Display a per-user “My QR” screen and support resolving scanned QR payloads to recipient metadata via backend calls.",
+      "acceptanceCriteria": [
+        "A signed-in user can navigate to a “My QR” screen and see their QR code.",
+        "The encoded QR payload is accepted by the app and maps to exactly one registered user in the backend.",
+        "Backend exposes a query method to resolve QR payload -> recipient user metadata needed for payment initiation (at minimum: recipient principal, display name, phone number)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/MyQRPage.tsx",
+          "operation": "create",
+          "description": "Create the “My QR” screen that fetches the signed-in user profile and renders their stable QR payload (from profile.qrCode) and a scannable QR image/representation for it (no external services). Also show the QR-themed header illustration. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/hooks/useQR.ts",
+          "operation": "create",
+          "description": "Add hooks/utilities for working with QR payloads: reading the caller profile QR payload, and resolving a scanned payload to recipient metadata via backend capability. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/backend.d.ts",
+          "operation": "modify",
+          "description": "Update the frontend backend interface types to include the QR resolution query capability required by the UI (QR payload -> recipient principal, display name, phone number), keeping it consistent with how the canister will be updated."
+        },
+        {
+          "path": "frontend/src/router.tsx",
+          "operation": "modify",
+          "description": "Wire the “My QR” route into the authenticated route set and ensure it is reachable from navigation."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Implement a camera-based “Scan & Pay” QR scanner screen that resolves recipients and shows a payment initiation form with clear error/rescan states.",
+      "acceptanceCriteria": [
+        "User can open a “Scan & Pay” screen and grant camera permission to scan a QR code.",
+        "On successful scan, the UI shows recipient name/handle and a payment form with amount input.",
+        "If the QR payload is invalid or unregistered, the UI shows a clear error state and allows rescanning.",
+        "The scan flow works without requiring any external services."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/ScanPayPage.tsx",
+          "operation": "create",
+          "description": "Create the “Scan & Pay” screen with a responsive camera preview, start/stop controls, and a rescan flow. Use the selected qr-code component (useQRScanner hook) to decode QR codes via the device camera; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/ScanPayPage.tsx",
+          "operation": "modify",
+          "description": "Integrate recipient resolution: when a QR is scanned, call the backend QR resolution capability; on success show recipient details + payment form (amount + optional note), on failure show an English error state with a rescan/reset action. Use the selected authorization guidance to handle authorization traps gracefully; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/router.tsx",
+          "operation": "modify",
+          "description": "Wire the “Scan & Pay” route into the authenticated route set and ensure it is reachable from navigation."
+        },
+        {
+          "path": "frontend/src/hooks/useQR.ts",
+          "operation": "modify",
+          "description": "Add a React Query mutation/helper to resolve QR payloads with proper loading/error states used by Scan & Pay. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/CameraErrorState.tsx",
+          "operation": "create",
+          "description": "Add a reusable English error-state component for camera/permission/not-supported cases, used by Scan & Pay. Use selected camera/qr-code component error shapes for messaging; verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Create a payment confirmation flow that submits a transaction, then shows a success receipt and a transactions history UI.",
+      "acceptanceCriteria": [
+        "Submitting the payment form creates a transaction record persisted in the canister.",
+        "The payer sees a success screen showing recipient, amount, timestamp, and a transaction ID.",
+        "Both payer and recipient can view the transaction in their history after creation.",
+        "Backend provides methods to list transactions for the signed-in user (as payer or recipient)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useTransactions.ts",
+          "operation": "create",
+          "description": "Add React Query hooks/mutations for creating a transaction (createTransaction) and for listing signed-in user transactions (payer or recipient) via backend capability, including cache invalidation after creation. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/backend.d.ts",
+          "operation": "modify",
+          "description": "Extend the frontend backend interface types to include the transaction-listing capability needed for the Transactions screen (list for signed-in user as payer or recipient), aligning with the required behavior."
+        },
+        {
+          "path": "frontend/src/pages/ReceiptPage.tsx",
+          "operation": "create",
+          "description": "Create a success receipt screen that renders transaction ID, recipient, amount, and timestamp (English), and provides navigation back to Home/Transactions."
+        },
+        {
+          "path": "frontend/src/pages/TransactionsPage.tsx",
+          "operation": "create",
+          "description": "Create a Transactions history screen that lists transactions for the signed-in user newest-first, and shows an English styled empty state when there are none."
+        },
+        {
+          "path": "frontend/src/pages/ScanPayPage.tsx",
+          "operation": "modify",
+          "description": "On payment form submit, call createTransaction and route to the Receipt screen with the returned transaction data; show an English failure message on errors and allow retry/cancel."
+        },
+        {
+          "path": "frontend/src/router.tsx",
+          "operation": "modify",
+          "description": "Register routes for Transactions and Receipt screens and ensure they are reachable from navigation and the Scan & Pay success flow."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Add a notifications inbox UI with read/unread state and support marking notifications as read; trigger scan and transaction notifications via backend calls from the UI flow.",
+      "acceptanceCriteria": [
+        "When a scan resolves a registered recipient, the backend records a notification for the recipient indicating a scan event (who scanned if available, and time).",
+        "When a transaction is created, backend records a debit notification for payer and a credit notification for recipient including amount, counterparty, and time.",
+        "Frontend includes a “Notifications” screen listing notifications newest-first with read/unread state.",
+        "User can mark notifications as read (persisted)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/hooks/useNotifications.ts",
+          "operation": "create",
+          "description": "Add React Query hooks for fetching user notifications (getUserNotifications), fetching a single notification if needed (getNotification), and marking as read (markNotificationRead) with optimistic updates and refetch/invalidation."
+        },
+        {
+          "path": "frontend/src/pages/NotificationsPage.tsx",
+          "operation": "create",
+          "description": "Create the Notifications inbox screen that lists notifications newest-first, visually distinguishes read/unread, supports marking a notification as read (persisted), and shows a styled English empty state when none exist."
+        },
+        {
+          "path": "frontend/src/pages/ScanPayPage.tsx",
+          "operation": "modify",
+          "description": "After resolving a QR payload to a registered recipient, call sendQRScanNotification for the QR owner using the scannerDisplayName when available (fallback to a generic English label if profile is missing). Use the selected authorization guidance for handling traps gracefully; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/ScanPayPage.tsx",
+          "operation": "modify",
+          "description": "After successful transaction creation, ensure the UI refreshes notifications and transactions queries (polling/refetch is acceptable) so both debit/credit notifications appear appropriately for the current user."
+        },
+        {
+          "path": "frontend/src/router.tsx",
+          "operation": "modify",
+          "description": "Register the Notifications route and ensure it is reachable from navigation."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Create a home dashboard with navigation to major screens and apply a coherent non-blue/non-purple visual theme across the app with responsive layout and styled empty states.",
+      "acceptanceCriteria": [
+        "Home/dashboard provides clear entry points to all major screens.",
+        "Theme is consistent across the app and does not use a blue/purple primary palette.",
+        "Empty states (no transactions/notifications) are styled and informative in English.",
+        "UI is responsive for mobile-sized viewports."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/HomePage.tsx",
+          "operation": "create",
+          "description": "Create a simple home dashboard screen with navigation cards/buttons to: My QR, Scan & Pay, Transactions, Notifications, and Profile (English labels), optimized for mobile layout."
+        },
+        {
+          "path": "frontend/src/components/AppLayout.tsx",
+          "operation": "create",
+          "description": "Create a shared layout with header (logo + app name + auth controls) and consistent spacing, cards, and button styling across pages. Use the selected authorization component guidance for login/logout UI; verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/index.css",
+          "operation": "create",
+          "description": "Add global theme tokens/styles (e.g., warm/green/amber primary accents) to ensure a consistent look and explicitly avoid a blue/purple primary palette; ensure typography, spacing, buttons, cards, and empty states are consistent and responsive."
+        },
+        {
+          "path": "frontend/src/router.tsx",
+          "operation": "modify",
+          "description": "Wire Home as the authenticated default route and ensure all major screens are reachable via navigation from Home and/or a shared layout."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Wire generated static brand and illustration assets (logo, QR header illustration, empty-state illustration) into the UI from frontend/public/assets/generated.",
+      "acceptanceCriteria": [
+        "Generated images exist under frontend/public/assets/generated with the specified filenames.",
+        "The app displays the logo in the header/login area.",
+        "The QR-themed illustration is used on the My QR and/or Scan & Pay screens.",
+        "The empty-state illustration is used on Transactions and Notifications when appropriate."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/components/AppLayout.tsx",
+          "operation": "modify",
+          "description": "Render the generated logo asset in the header/login area using frontend/public/assets/generated/app-logo.dim_512x512.png."
+        },
+        {
+          "path": "frontend/src/pages/MyQRPage.tsx",
+          "operation": "modify",
+          "description": "Render the QR-themed header illustration on the My QR screen using frontend/public/assets/generated/qr-header-illustration.dim_1200x600.png."
+        },
+        {
+          "path": "frontend/src/pages/ScanPayPage.tsx",
+          "operation": "modify",
+          "description": "Render the QR-themed header illustration on the Scan & Pay screen (or its header area) using frontend/public/assets/generated/qr-header-illustration.dim_1200x600.png."
+        },
+        {
+          "path": "frontend/src/pages/TransactionsPage.tsx",
+          "operation": "modify",
+          "description": "Render the empty-state illustration when there are no transactions using frontend/public/assets/generated/empty-state-illustration.dim_900x600.png."
+        },
+        {
+          "path": "frontend/src/pages/NotificationsPage.tsx",
+          "operation": "modify",
+          "description": "Render the empty-state illustration when there are no notifications using frontend/public/assets/generated/empty-state-illustration.dim_900x600.png."
+        }
+      ]
+    }
+  ]
+}

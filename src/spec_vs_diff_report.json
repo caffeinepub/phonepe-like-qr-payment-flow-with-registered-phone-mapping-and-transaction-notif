@@ -1,0 +1,101 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-06T09:31:42.225Z",
+  "summary": "The diff adds major frontend pages (Home, Profile, My QR, Scan & Pay, Notifications, Transactions, Receipt), Internet Identity auth gating, and a new Motoko backend actor with types for profiles/transactions/notifications and some profile + notifications APIs. However, several core requirements are either missing or only partially implemented based on the diff evidence—most notably transaction listing/history, receipt details, and the explicit QR-payload resolution API. There are also a few extra features (admin/access control secret init, marketing footer) not requested.",
+  "missing_requirements": [
+    {
+      "id": "REQ-2",
+      "requirement": "Backend exposes a query method to resolve QR payload -> recipient user metadata needed for payment initiation (at minimum: recipient principal, display name, phone number), and a backend index so scanned QR maps to exactly one registered user's phone number.",
+      "reason": "Frontend scan flow treats the QR payload as a Principal text and directly calls getUserProfile(principal), rather than using a dedicated resolve method. In the shown backend excerpt, there is no resolveQrPayload-style query method or explicit QR index mapping payload->user.",
+      "evidence": [
+        "frontend/src/pages/ScanPayPage.tsx",
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "requirement": "Backend provides methods to list transactions for the signed-in user (as payer or recipient) and frontend shows transaction history after creation.",
+      "reason": "TransactionsPage explicitly states the backend method does not exist yet and uses an empty local array, so history viewing is not implemented in the frontend, and the required backend listing method is not evidenced in the diff.",
+      "evidence": [
+        "frontend/src/pages/TransactionsPage.tsx"
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "requirement": "Success receipt screen shows recipient, amount, timestamp, and a transaction ID based on the created transaction.",
+      "reason": "ReceiptPage uses a mocked transaction object with hardcoded amount/recipient and current time, and does not fetch actual transaction details by transaction ID.",
+      "evidence": [
+        "frontend/src/pages/ReceiptPage.tsx"
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "requirement": "User can mark notifications as read (persisted).",
+      "reason": "Frontend calls actor.markNotificationRead(notificationId), but the backend excerpt does not show a markNotificationRead method implementation. Since backend file is truncated, this cannot be confirmed as implemented.",
+      "evidence": [
+        "frontend/src/hooks/useNotifications.ts",
+        "backend/main.mo"
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "requirement": "Generated image assets exist under frontend/public/assets/generated with the specified filenames.",
+      "reason": "UI references the assets by path, but the diff summary does not show the actual image files added (some files are omitted due to limits), so their existence cannot be verified from provided evidence.",
+      "evidence": [
+        "frontend/src/components/AppLayout.tsx",
+        "frontend/src/components/AuthGate.tsx",
+        "frontend/src/pages/MyQRPage.tsx",
+        "frontend/src/pages/NotificationsPage.tsx",
+        "frontend/src/pages/TransactionsPage.tsx"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Admin/permissioned access control initialization using a secret URL parameter (caffeineAdminToken) and backend authorization mixins.",
+      "reason": "The BuildRequest does not ask for role-based access control, admin tokens, or secret URL parameters; it only requires Internet Identity sign-in and profile/QR/transactions/notifications features.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/hooks/useActor.ts"
+      ]
+    },
+    {
+      "description": "Footer marketing attribution link to caffeine.ai.",
+      "reason": "Not requested in requirements and not necessary for the payment/QR/notifications flow.",
+      "evidence": [
+        "frontend/src/components/AppLayout.tsx"
+      ]
+    }
+  ],
+  "confidence": 0.62,
+  "changed_files": [
+    "all_files_summary.json",
+    "backend/main.mo",
+    "frontend-file-summaries.txt",
+    "frontend/index.css",
+    "frontend/index.html",
+    "frontend/src/App.tsx",
+    "frontend/src/components/AppLayout.tsx",
+    "frontend/src/components/AuthGate.tsx",
+    "frontend/src/components/CameraErrorState.tsx",
+    "frontend/src/components/ProfileSetupModal.tsx",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/hooks/useInternetIdentity.ts",
+    "frontend/src/hooks/useNotifications.ts",
+    "frontend/src/hooks/useProfile.ts",
+    "frontend/src/hooks/useTransactions.ts",
+    "frontend/src/index.css",
+    "frontend/src/main.tsx",
+    "frontend/src/pages/HomePage.tsx",
+    "frontend/src/pages/MyQRPage.tsx",
+    "frontend/src/pages/NotificationsPage.tsx",
+    "frontend/src/pages/ProfilePage.tsx",
+    "frontend/src/pages/ReceiptPage.tsx",
+    "frontend/src/pages/ScanPayPage.tsx",
+    "frontend/src/pages/TransactionsPage.tsx",
+    "frontend/src/utils/urlParams.ts",
+    "frontend/tailwind.config.js",
+    "project_state.json"
+  ]
+}

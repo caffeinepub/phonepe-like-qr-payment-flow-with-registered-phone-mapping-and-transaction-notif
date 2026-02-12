@@ -1,0 +1,167 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-implement-internet-identity-sign-in-and-a-minimal-user-profile-setup-screen-that-collects-and-stores-a-user-s-display-name-and-phone-number-as-plain-text-for-the-signed-in-principal",
+      "featureTitle": "Implement Internet Identity sign-in and a minimal user profile setup screen that collects and stores a user's display name and phone number (as plain text) for the signed-in principal.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/AuthGate.tsx",
+        "frontend/src/hooks/useProfile.ts",
+        "frontend/src/pages/ProfilePage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "camera@1.0.0",
+        "qr-code@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-qr-code-support-by-generating-a-personal-qr-code-for-each-signed-in-user-that-encodes-a-stable-identifier-resolvable-by-the-app-e-g-the-user-s-principal-text-or-an-app-specific-payment-handle-and-store-an-index-so-a-scanned-qr-can-be-mapped-to-the-qr-owner-s-registered-phone-number",
+      "featureTitle": "Add QR code support by generating a personal QR code for each signed-in user that encodes a stable identifier resolvable by the app (e.g., the user's principal text or an app-specific payment handle) and store an index so a scanned QR can be mapped to the QR owner's registered phone number.",
+      "files": [
+        "frontend/src/pages/MyQRPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "camera@1.0.0",
+        "qr-code@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-a-web-based-qr-scanner-screen-using-the-device-camera-when-available-to-scan-qr-codes-and-upon-a-valid-scan-display-the-resolved-recipient-details-and-a-payment-initiation-form-amount-optional-note",
+      "featureTitle": "Implement a web-based QR scanner screen using the device camera (when available) to scan QR codes and, upon a valid scan, display the resolved recipient details and a payment initiation form (amount + optional note).",
+      "files": [
+        "frontend/src/components/CameraErrorState.tsx",
+        "frontend/src/pages/ScanPayPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "camera@1.0.0",
+        "qr-code@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-a-transaction-flow-when-the-payer-confirms-payment-to-the-scanned-recipient-record-a-transaction-in-the-backend-payer-principal-recipient-principal-amount-note-timestamp-and-show-a-success-receipt-screen",
+      "featureTitle": "Create a transaction flow: when the payer confirms payment to the scanned recipient, record a transaction in the backend (payer principal, recipient principal, amount, note, timestamp) and show a success receipt screen.",
+      "files": [
+        "frontend/src/hooks/useTransactions.ts",
+        "frontend/src/pages/ReceiptPage.tsx",
+        "frontend/src/pages/ScanPayPage.tsx",
+        "frontend/src/pages/TransactionsPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "camera@1.0.0",
+        "qr-code@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-in-app-notifications-that-mirror-the-requested-sms-messages-1-when-a-qr-code-is-scanned-resolved-create-a-notification-addressed-to-the-qr-owner-indicating-their-qr-was-scanned-2-when-a-transaction-is-created-create-two-notifications-a-debit-notification-for-the-payer-and-a-credit-notification-for-the-recipient-display-these-in-a-notifications-inbox-ui",
+      "featureTitle": "Implement in-app notifications that mirror the requested SMS messages: (1) when a QR code is scanned/resolved, create a notification addressed to the QR owner indicating their QR was scanned; (2) when a transaction is created, create two notifications: a debit notification for the payer and a credit notification for the recipient. Display these in a notifications inbox UI.",
+      "files": [
+        "frontend/src/hooks/useNotifications.ts",
+        "frontend/src/pages/NotificationsPage.tsx",
+        "frontend/src/pages/ScanPayPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "camera@1.0.0",
+        "qr-code@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-simple-home-dashboard-with-navigation-to-my-qr-scan-pay-transactions-notifications-and-profile-ensure-the-app-uses-a-coherent-distinct-visual-theme-avoid-blue-purple-applied-consistently-across-pages-typography-spacing-buttons-cards-and-empty-states",
+      "featureTitle": "Add a simple home dashboard with navigation to: My QR, Scan & Pay, Transactions, Notifications, and Profile; ensure the app uses a coherent, distinct visual theme (avoid blue/purple) applied consistently across pages (typography, spacing, buttons, cards, and empty states).",
+      "files": [
+        "frontend/src/components/AppLayout.tsx",
+        "frontend/src/index.css",
+        "frontend/src/pages/HomePage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "camera@1.0.0",
+        "qr-code@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-generated-static-brand-and-ui-illustration-assets-and-render-them-in-the-ui-stored-under-frontend-public-assets-generated-for-app-logo-a-qr-themed-header-illustration-and-an-empty-state-illustration-used-on-transactions-notifications-when-lists-are-empty",
+      "featureTitle": "Add generated static brand and UI illustration assets and render them in the UI (stored under frontend/public/assets/generated) for: app logo, a QR-themed header illustration, and an empty-state illustration used on Transactions/Notifications when lists are empty.",
+      "files": [
+        "frontend/src/components/AppLayout.tsx",
+        "frontend/src/pages/MyQRPage.tsx",
+        "frontend/src/pages/NotificationsPage.tsx",
+        "frontend/src/pages/ScanPayPage.tsx",
+        "frontend/src/pages/TransactionsPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "camera@1.0.0",
+        "qr-code@1.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-7"
+      ],
+      "confidence": "high"
+    }
+  ]
+}

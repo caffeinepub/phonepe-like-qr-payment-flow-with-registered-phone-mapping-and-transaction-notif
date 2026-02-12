@@ -1,0 +1,20 @@
+{
+  "frontend/src/App.tsx": "Main application component that sets up TanStack Router with all routes (home, profile, QR, scan, transactions, notifications, receipt) wrapped in AuthGate for authentication.",
+  "frontend/src/components/AppLayout.tsx": "Root layout component with header (logo, app name, logout), bottom navigation bar for authenticated users, and footer with attribution.",
+  "frontend/src/components/AuthGate.tsx": "Authentication wrapper that shows login screen for unauthenticated users and renders children for authenticated users with Internet Identity.",
+  "frontend/src/components/CameraErrorState.tsx": "Reusable error display component for camera-related errors with inline CameraError type definition and retry functionality.",
+  "frontend/src/components/ProfileSetupModal.tsx": "Modal dialog that prompts new users to enter their display name and phone number on first login, using onInteractOutside to prevent dismissal.",
+  "frontend/src/hooks/useProfile.ts": "React Query hooks for user profile operations including fetching caller profile, saving profile, and fetching other user profiles by principal.",
+  "frontend/src/hooks/useNotifications.ts": "React Query hooks for notification operations including fetching user notifications, marking as read, and sending QR scan notifications.",
+  "frontend/src/hooks/useTransactions.ts": "React Query mutation hook for creating transactions with automatic notification invalidation on success.",
+  "frontend/src/pages/HomePage.tsx": "Dashboard page with navigation cards to all major features (My QR, Scan & Pay, Transactions, Notifications, Profile) and unread notification badge.",
+  "frontend/src/pages/ProfilePage.tsx": "Profile view page displaying user's display name, phone number, and QR code ID in a card layout.",
+  "frontend/src/pages/MyQRPage.tsx": "Page that displays user's personal QR code generated using a custom Canvas-based generator that creates a QR-style visual pattern from the user's principal.",
+  "frontend/src/pages/ScanPayPage.tsx": "QR scanner page using useQRScanner hook with camera preview, recipient resolution, payment form (amount + note), and error handling for invalid codes.",
+  "frontend/src/pages/TransactionsPage.tsx": "Transaction history page with empty state illustration (backend method getUserTransactions not yet available).",
+  "frontend/src/pages/NotificationsPage.tsx": "Notifications inbox displaying all user notifications sorted by unread status with mark-as-read functionality and empty state.",
+  "frontend/src/pages/ReceiptPage.tsx": "Payment success receipt page showing transaction details (ID, recipient, amount, timestamp) with navigation to history or home.",
+  "frontend/src/index.css": "Global styles with warm amber/orange OKLCH color palette for light and dark modes, avoiding blue/purple tones.",
+  "frontend/tailwind.config.js": "Tailwind configuration with Inter font family, custom box shadows, and extended theme matching the warm color palette.",
+  "frontend/package.json": "Package configuration with qrcode library removed, using native Canvas API instead for QR code generation."
+}
